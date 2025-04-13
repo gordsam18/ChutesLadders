@@ -14,7 +14,7 @@ First player to the end (spot 100) wins
 Game asks if they want to restart 
 """
 # ui in progress 
-# import tkinter as tk
+import tkinter as tk
 import random
 
 
@@ -27,53 +27,101 @@ class Game:
         self.boardEnd = self.row * self.col
         self.chute = {16: 6, 47: 26, 49: 11, 56: 53, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 98: 78}
         self.ladder = {1: 38,4: 14,9: 31,21: 42,28: 84,36: 44,51: 67,71: 91,80: 100}
+        self.roll = 0
+        self.didRoll = False
 
         self.players = {1: "Player 1", 2: "Player 2"}
-        self.playerPosition = {1: 0, 2: 0}
+        self.playerPosition = {1: 1, 2: 1}
 
         self.currentPlayer = 1
+
+        self.root = tk.Tk()
         
 
     def createBoard(self):
         """
         10x10 matrix board
-        snakes evey 10 spots from 1-100 
+        snakes every 10 spots from 1-100 
         """
         rows = 10
-        cols = 10 
-
+        cols = 10
+        counter = 100
         board = []
-        count = 1
+        
 
 
-        for i in range(rows):
-            for j in range(cols):
-                row = [count + cols]
-                count += cols
+        for i in range(rows): 
+            row = []
+            for col in range(cols):
+                row.append(counter)
+                counter -= 1
             
-            if count % 2 == 1:
+            if i % 2 == 1:
                 row.reverse()
-
-        board.append(row)
+                
+            board.append(row)
 
         return board
 
-    def printBoard(self):
+    def drawBoard(self, root):
+        """"
+        Draws the board on the Tkinter window using Labels in a grid.
         """
-        ** In progress ** 
-        Printing and formatting the board for better readability
-        
-        """
-        for row in self.board:
-            print(''.join(f'{x:2}'for x in row))
+        for widget in root.winfo_children():
+            widget.grid_forget()
 
-    
+        for i, row in enumerate(self.board):
+            for j, value in enumerate(row):
+                cell_text = str(value)
+                # Add player positions if they're on this cell
+                players_here = [player for player, pos in self.playerPosition.items() if pos == value]
+
+                if players_here:
+                    cell_text += f"\n{', '.join(map(str, players_here))}"
+
+                label = tk.Label(
+                root,
+                text=cell_text,
+                width=6,
+                height=3,
+                borderwidth=2,
+                relief="ridge",
+                font=("Helvetica", 10),
+                bg="#fff"
+                )
+                label.grid(row=i, column=j, padx=1, pady=1)
+
+        self.turnLabel = tk.Label(
+        root,
+        text=f"{self.players[self.currentPlayer]}'s turn. Please Roll\n")
+        self.turnLabel.grid()
+
+        self.diceButton = tk.Button(
+            root, 
+            text="Roll", 
+            command=self.diceRoll, 
+            bg="blue", 
+            fg="white", 
+            font=("Arial", 14),
+            width=10,
+            height=2)
+        self.diceButton.grid(pady=10)
+        self.rollLabel = tk.Label(
+            self.root,
+            text=f"Please Roll")
+        self.rollLabel.grid()
+
+        
+
         
     def diceRoll(self):
         """
         Rolls a 6 sided dice
         """
-        return random.randint(1,6)
+        self.roll = random.randint(1,6)
+        self.rollLabel.config(text=f"You rolled a {self.roll}")
+        self.rollLabel.grid()
+        return self.roll and self.didRoll is True
 
     def movePlayer(self, player, dice):
         """
@@ -109,25 +157,50 @@ class Game:
         Moes the player to the new spot given by the movePlayer Method and then Switches player
         Continues cycle until player has reached the 100th spot
         """
+        # Initialize the GUI
+        
+        self.root.title("Snakes Board")
+        
         while self.game is True:
-            print(f"{self.players[self.currentPlayer]}'s turn. Please Roll\n")
+            print("in the loop")
+            self.drawBoard(self.root)
+            
+            self.turnLabel.config(text=f"{self.players[self.currentPlayer]}'s turn. Please Roll")
+            self.turnLabel.grid()
+            #print(f"{self.players[self.currentPlayer]}'s turn. Please Roll")
             diceRoll = self.diceRoll()
-            print(f"{self.players[self.currentPlayer]} rolled a {diceRoll}\n")
-            newPosition = self.movePlayer(self.currentPlayer, diceRoll)
-            self.playerPosition[self.currentPlayer] = newPosition
-            print(f"{self.players[self.currentPlayer]} moved to {newPosition}\n")
-            
-            if newPosition == self.boardEnd:
-                print(f"{self.players[self.currentPlayer]} wins!")
-                self.game = False
-                return game
-            
-            
-            if self.currentPlayer == 2:
-                self.currentPlayer = 1
-            else: 
-                self.currentPlayer = 2  
-    
+            if self.didRoll is True:
+                self.playerRoll = tk.Label(
+                    self.root,
+                    text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}"
+                )
+                self.playerRoll.grid()
+                self.turnLabel.config(text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
+                self.turnLabel.grid()
+                #print(f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
+
+                newPosition = self.movePlayer(self.currentPlayer, diceRoll)
+                self.playerPosition[self.currentPlayer] = newPosition
+
+                #print(f"{self.players[self.currentPlayer]} moved to {newPosition}")
+                
+                if newPosition == self.boardEnd:
+                    print(f"{self.players[self.currentPlayer]} wins!")
+                    self.game = False
+                    return game
+                
+                if self.currentPlayer == 2:
+                    self.currentPlayer = 1
+                else: 
+                    self.currentPlayer = 2  
+            self.didRoll is False
+
+            print("loop completed")
+
+        self.root.mainloop()  
+
+
+
 # game loop 
 if __name__ == "__main__":
     game = Game()
