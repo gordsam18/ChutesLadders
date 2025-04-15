@@ -144,6 +144,7 @@ class Game:
             self.diceButton.config(state="disabled")
 
         if self.currentPlayer == 2:
+                self.currentPlayer = 1
                 self.currentPlayer
         else: 
             self.currentPlayer = 2
