@@ -20,22 +20,25 @@ import random
 
 class Game:
     def __init__(self):
+        self.root = tk.Tk()
         self.game = True
-        self.board = self.createBoard()
+        
         self.row = 10
         self.col = 10
         self.boardEnd = self.row * self.col
         self.chute = {16: 6, 47: 26, 49: 11, 56: 53, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 98: 78}
         self.ladder = {1: 38,4: 14,9: 31,21: 42,28: 84,36: 44,51: 67,71: 91,80: 100}
         self.roll = 0
-        self.didRoll = False
 
         self.players = {1: "Player 1", 2: "Player 2"}
         self.playerPosition = {1: 1, 2: 1}
 
         self.currentPlayer = 1
 
-        self.root = tk.Tk()
+        self.board = self.createBoard()
+        self.drawBoard(self.root)
+
+        
         
 
     def createBoard(self):
@@ -96,6 +99,12 @@ class Game:
         text=f"{self.players[self.currentPlayer]}'s turn. Please Roll\n")
         self.turnLabel.grid()
 
+        self.resultLabel = tk.Label(
+            root,
+            text=""
+        )
+        self.resultLabel.grid()
+
         self.diceButton = tk.Button(
             root, 
             text="Roll", 
@@ -120,8 +129,27 @@ class Game:
         """
         self.roll = random.randint(1,6)
         self.rollLabel.config(text=f"You rolled a {self.roll}")
-        self.rollLabel.grid()
-        return self.roll and self.didRoll is True
+        print(self.roll)
+        self.updateTurn(self.roll)
+        self.roll
+    
+    def updateTurn(self, roll):
+        player = self.currentPlayer
+        
+        newPosition = self.movePlayer(player, roll)
+        self.playerPosition[player] = newPosition
+
+        if newPosition == self.boardEnd:
+            self.turnLabel.config(text=f"{self.players[player]} wins!")
+            self.diceButton.config(state="disabled")
+
+        if self.currentPlayer == 2:
+                self.currentPlayer = 1
+        else: 
+            self.currentPlayer = 2
+        
+        self.drawBoard(self.root)
+
 
     def movePlayer(self, player, dice):
         """
@@ -137,12 +165,17 @@ class Game:
             return currentPosition
         
         if newPosition in self.chute:
+            self.resultLabel.config(text=f"{self.players[player]} went down a chute to {newPosition}")
             print("Went down a chute")
             newPosition = self.chute[newPosition]
 
         elif newPosition in self.ladder:
+            self.resultLabel.config(text=f"{self.players[player]} went up a ladder to {newPosition}")
             print("Went up a ladder")
             newPosition = self.ladder[newPosition]
+
+        self.resultLabel.config(text=f"{self.players[player]} moved to {newPosition}")
+        print(f"{self.players[player]} moved to {newPosition}")
 
         return newPosition
 
@@ -161,43 +194,44 @@ class Game:
         
         self.root.title("Snakes Board")
         
-        while self.game is True:
-            print("in the loop")
-            self.drawBoard(self.root)
-            
-            self.turnLabel.config(text=f"{self.players[self.currentPlayer]}'s turn. Please Roll")
+        print("in the loop")
+        self.drawBoard(self.root)
+        self.root.mainloop()
+        
+        """ 
+        self.turnLabel.config(text=f"{self.players[self.currentPlayer]}'s turn. Please Roll")
+        self.turnLabel.grid()
+        #print(f"{self.players[self.currentPlayer]}'s turn. Please Roll")
+        diceRoll = self.diceRoll()
+        if self.didRoll is True:
+            self.playerRoll = tk.Label(
+                self.root,
+                text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}"
+            )
+            self.playerRoll.grid()
+            self.turnLabel.config(text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
             self.turnLabel.grid()
-            #print(f"{self.players[self.currentPlayer]}'s turn. Please Roll")
-            diceRoll = self.diceRoll()
-            if self.didRoll is True:
-                self.playerRoll = tk.Label(
-                    self.root,
-                    text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}"
-                )
-                self.playerRoll.grid()
-                self.turnLabel.config(text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
-                self.turnLabel.grid()
-                #print(f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
+            #print(f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
 
-                newPosition = self.movePlayer(self.currentPlayer, diceRoll)
-                self.playerPosition[self.currentPlayer] = newPosition
+            newPosition = self.movePlayer(self.currentPlayer, diceRoll)
+            self.playerPosition[self.currentPlayer] = newPosition
 
-                #print(f"{self.players[self.currentPlayer]} moved to {newPosition}")
+            #print(f"{self.players[self.currentPlayer]} moved to {newPosition}")
+            
+            if newPosition == self.boardEnd:
+                print(f"{self.players[self.currentPlayer]} wins!")
+                self.game = False
                 
-                if newPosition == self.boardEnd:
-                    print(f"{self.players[self.currentPlayer]} wins!")
-                    self.game = False
-                    return game
-                
-                if self.currentPlayer == 2:
-                    self.currentPlayer = 1
-                else: 
-                    self.currentPlayer = 2  
-            self.didRoll is False
+            
+            if self.currentPlayer == 2:
+                self.currentPlayer = 1
+            else: 
+                self.currentPlayer = 2  
+            
 
             print("loop completed")
-
-        self.root.mainloop()  
+"""
+          
 
 
 
