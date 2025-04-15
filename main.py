@@ -144,7 +144,7 @@ class Game:
             self.diceButton.config(state="disabled")
 
         if self.currentPlayer == 2:
-                self.currentPlayer = 1
+                self.currentPlayer
         else: 
             self.currentPlayer = 2
         
@@ -197,40 +197,7 @@ class Game:
         print("in the loop")
         self.drawBoard(self.root)
         self.root.mainloop()
-        
-        """ 
-        self.turnLabel.config(text=f"{self.players[self.currentPlayer]}'s turn. Please Roll")
-        self.turnLabel.grid()
-        #print(f"{self.players[self.currentPlayer]}'s turn. Please Roll")
-        diceRoll = self.diceRoll()
-        if self.didRoll is True:
-            self.playerRoll = tk.Label(
-                self.root,
-                text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}"
-            )
-            self.playerRoll.grid()
-            self.turnLabel.config(text=f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
-            self.turnLabel.grid()
-            #print(f"{self.players[self.currentPlayer]} rolled a {diceRoll}")
 
-            newPosition = self.movePlayer(self.currentPlayer, diceRoll)
-            self.playerPosition[self.currentPlayer] = newPosition
-
-            #print(f"{self.players[self.currentPlayer]} moved to {newPosition}")
-            
-            if newPosition == self.boardEnd:
-                print(f"{self.players[self.currentPlayer]} wins!")
-                self.game = False
-                
-            
-            if self.currentPlayer == 2:
-                self.currentPlayer = 1
-            else: 
-                self.currentPlayer = 2  
-            
-
-            print("loop completed")
-"""
           
 
 
