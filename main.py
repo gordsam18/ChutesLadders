@@ -70,6 +70,53 @@ class Game:
         """"
         Draws the board on the Tkinter window using Labels in a grid.
         """
+        
+
+
+        legend = {
+            "Chute Start": "salmon",
+            "Ladder Start": "lightblue",
+            "Chute/Ladder End": "khaki",
+            "Player Tile": "lightgreen"
+        }
+
+        for i, (name, color) in enumerate(legend.items()):
+            tk.Label(root, text=name, bg=color, width=15).grid(row=11+i, column=0, columnspan=2, sticky="w", padx=5, pady=2)
+
+        self.turnLabel = tk.Label(
+        root,
+        text=f"{self.players[self.currentPlayer]}'s turn. Please Roll\n")
+        self.turnLabel.grid()
+
+        self.resultLabel = tk.Label(
+            root,
+            text=f"{self.players[self.currentPlayer]}'s turn. Please Roll",
+            font=("Arial", 12, "bold"),
+            fg="darkblue",
+            bg="#e0f7fa",
+            pady=10
+        )
+        self.resultLabel.grid()
+
+        self.diceButton = tk.Button(
+            root,
+            text="Roll",
+            command=self.diceRoll,
+            bg="#00796b",
+            fg="white",
+            activebackground="#004d40",
+            font=("Arial", 14, "bold"),
+            width=10,
+            height=2,
+            bd=3,
+            relief="raised"
+        )
+        self.diceButton.grid(pady=10)
+        self.rollLabel = tk.Label(
+            self.root,
+            text=f"Please Roll")
+        self.rollLabel.grid()
+
         for widget in root.winfo_children():
             widget.grid_forget()
 
@@ -82,6 +129,15 @@ class Game:
                 if players_here:
                     cell_text += f"\n{', '.join(map(str, players_here))}"
 
+                cellBackground = "lightgreen"
+
+                if value in self.chute:
+                    cellBackground = "salmon"
+                elif value in self.ladder:
+                    cellBackground = "lightblue"
+                elif value in self.chute.values() or value in self.ladder.values():
+                    cellBackground = "khaki"
+
                 label = tk.Label(
                 root,
                 text=cell_text,
@@ -89,36 +145,15 @@ class Game:
                 height=3,
                 borderwidth=2,
                 relief="ridge",
-                font=("Helvetica", 10),
-                bg="#fff"
+                font=("Helvetica", 10, "bold"),
+                bg=cellBackground,
+                fg="black"
                 )
-                label.grid(row=i, column=j, padx=1, pady=1)
+                label.grid(row=i + 3, column=j, padx=1, pady=1)
 
-        self.turnLabel = tk.Label(
-        root,
-        text=f"{self.players[self.currentPlayer]}'s turn. Please Roll\n")
-        self.turnLabel.grid()
-
-        self.resultLabel = tk.Label(
-            root,
-            text=""
-        )
-        self.resultLabel.grid()
-
-        self.diceButton = tk.Button(
-            root, 
-            text="Roll", 
-            command=self.diceRoll, 
-            bg="blue", 
-            fg="white", 
-            font=("Arial", 14),
-            width=10,
-            height=2)
-        self.diceButton.grid(pady=10)
-        self.rollLabel = tk.Label(
-            self.root,
-            text=f"Please Roll")
-        self.rollLabel.grid()
+        self.turnLabel.grid(row=0, column=0, columnspan=10)
+        self.diceButton.grid(row=1, column=0, columnspan=10, pady=5)
+        self.rollLabel.grid(row=2, column=0, columnspan=10)
 
         
 
